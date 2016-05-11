@@ -180,10 +180,6 @@
         $scope.focus = "music";
       });
 
-      AnnyangService.addCommand(command.musicstop, function() {
-        $scope.musicplay.pause();
-      });
-
       AnnyangService.addCommand(command.playyoutube, function(term) {
 
         YoutubeService.getYoutube(term,'video').then(function(){
