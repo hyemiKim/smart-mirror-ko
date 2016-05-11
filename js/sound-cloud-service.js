@@ -5,7 +5,8 @@
     var service = {};
     var audioCtx = null,
         _stream = null,
-        intv = null;
+        intv = null,
+        streamUrl = "";
     service.scResponse = null;
 
     service.init = function() {
@@ -19,32 +20,32 @@
       then(function(response) {
         service.scResponse = response.data;
         console.debug("SoundCloud link: ", service.scResponse[0].permalink_url);
+        streamUrl = service.scResponse[0].stream_url;
         return service.scResponse;
       });
     };
 
     service.startVisualizer = function(){
-      navigator.getUserMedia  = navigator.getUserMedia ||
-      navigator.webkitGetUserMedia ||
-      navigator.mozGetUserMedia ||
-      navigator.msGetUserMedia;
 
       var audio = document.querySelector('audio');
+      audio.setAttribute('src', streamUrl);
+      audio.play();
 
       var errorCallback = function(e) {
         console.log('Reeeejected!', e);
       };
 
-      if (navigator.getUserMedia) {
-        navigator.getUserMedia({audio: true}, function(stream) {
-          _stream = stream;
-          audioCtx = new (window.AudioContext)()
-          var source = audioCtx.createMediaStreamSource(_stream);
-          var filter = audioCtx.createBiquadFilter();
+      // if (navigator.getUserMedia) {
+        // navigator.getUserMedia({audio: true}, function(stream) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext);
+          var source = audioCtx.createMediaStreamSource(audio);
+          // var filter = audioCtx.createBiquadFilter();
 
           var analyser = audioCtx.createAnalyser();
+          analyser.fftSize = 256;
+          audio.crossOrigin = "anonymous";
           source.connect(analyser);
-          filter.connect(audioCtx.destination);
+          analyser.connect(audioCtx.destination);
 
           var bufferLength = analyser.frequencyBinCount;
           console.log(bufferLength);
@@ -58,8 +59,8 @@
 
           intv = setInterval(function(){ draw() }, 1000 / 30);
 
-        }, errorCallback);
-      }
+        // }, errorCallback);
+      // }
     };
 
     service.stopVisualizer = function(){
