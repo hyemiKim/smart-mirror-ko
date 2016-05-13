@@ -16,11 +16,11 @@
     }
 
     service.searchSoundCloud = function(query) {
-      return $http.get('https://api.soundcloud.com/tracks.json?client_id=' + SOUNDCLOUD_KEY + '&q=' + query + '&limit=1').
+      return $http.get('https://api.soundcloud.com/tracks.json?client_id=' + SOUNDCLOUD_APT_KEY + '&q=' + query + '&limit=1').
       then(function(response) {
         service.scResponse = response.data;
         console.debug("SoundCloud link: ", service.scResponse[0].permalink_url);
-        streamUrl = service.scResponse[0].stream_url;
+        streamUrl = service.scResponse[0].stream_url + '?client_id=' + SOUNDCLOUD_APT_KEY;
         return service.scResponse;
       });
     };
@@ -35,32 +35,27 @@
         console.log('Reeeejected!', e);
       };
 
-      // if (navigator.getUserMedia) {
-        // navigator.getUserMedia({audio: true}, function(stream) {
-          audioCtx = new (window.AudioContext || window.webkitAudioContext);
-          var source = audioCtx.createMediaStreamSource(audio);
-          // var filter = audioCtx.createBiquadFilter();
+      audioCtx = new (window.AudioContext || window.webkitAudioContext);
+      var source = audioCtx.createMediaElementSource(audio);
+      // var filter = audioCtx.createBiquadFilter();
 
-          var analyser = audioCtx.createAnalyser();
-          analyser.fftSize = 256;
-          audio.crossOrigin = "anonymous";
-          source.connect(analyser);
-          analyser.connect(audioCtx.destination);
+      var analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 256;
+      audio.crossOrigin = "anonymous";
+      source.connect(analyser);
+      analyser.connect(audioCtx.destination);
 
-          var bufferLength = analyser.frequencyBinCount;
-          console.log(bufferLength);
+      var bufferLength = analyser.frequencyBinCount;
+      console.log(bufferLength);
 
-          var dataArray = new Uint8Array(bufferLength);
+      var dataArray = new Uint8Array(bufferLength);
 
-          function draw() {
-            analyser.getByteTimeDomainData(dataArray);
-            drawCanvas(dataArray,bufferLength);
-          };
+      function draw() {
+        analyser.getByteTimeDomainData(dataArray);
+        drawCanvas(dataArray,bufferLength);
+      };
 
-          intv = setInterval(function(){ draw() }, 1000 / 30);
-
-        // }, errorCallback);
-      // }
+      intv = setInterval(function(){ draw() }, 1000 / 30);
     };
 
     service.stopVisualizer = function(){

@@ -145,11 +145,11 @@
 
       AnnyangService.addCommand(command.musicplay, function(track) {
         SoundCloudService.searchSoundCloud(track).then(function(response){
-          SC.stream('/tracks/' + response[0].id).then(function(player){
-            player.play();
-            sound = player;
-            playing = true;
-          });
+          // SC.stream('/tracks/' + response[0].id).then(function(player){
+          //   player.play();
+          //   sound = player;
+          //   playing = true;
+          // });
 
           if (response[0].artwork_url){
             $scope.scThumb = response[0].artwork_url.replace("-large.", "-t500x500.");
