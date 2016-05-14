@@ -163,13 +163,13 @@
       });
 
       AnnyangService.addCommand(command.musicstop, function() {
-        sound.pause();
+        // sound.pause();
         SoundCloudService.stopVisualizer();
         $scope.focus = "default";
       });
 
       AnnyangService.addCommand(command.musicresume, function() {
-        sound.play();
+        // sound.play();
         SoundCloudService.startVisualizer();
         $scope.focus = "music";
       });
