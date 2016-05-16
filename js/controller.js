@@ -145,12 +145,6 @@
 
       AnnyangService.addCommand(command.musicplay, function(track) {
         SoundCloudService.searchSoundCloud(track).then(function(response){
-          // SC.stream('/tracks/' + response[0].id).then(function(player){
-          //   player.play();
-          //   sound = player;
-          //   playing = true;
-          // });
-
           if (response[0].artwork_url){
             $scope.scThumb = response[0].artwork_url.replace("-large.", "-t500x500.");
           } else {
@@ -158,24 +152,28 @@
           }
           $scope.scTrack = response[0].title;
           $scope.focus = "music";
+          SoundCloudService.play();
           SoundCloudService.startVisualizer();
         });
       });
 
       AnnyangService.addCommand(command.musicstop, function() {
         // sound.pause();
+        SoundCloudService.pause();
         SoundCloudService.stopVisualizer();
         $scope.focus = "default";
       });
 
       AnnyangService.addCommand(command.musicresume, function() {
         // sound.play();
+        SoundCloudService.play();
         SoundCloudService.startVisualizer();
         $scope.focus = "music";
       });
       AnnyangService.addCommand(command.musicreplay, function() {
-        sound.seek(0);
-        sound.play();
+        // sound.seek(0);
+        // sound.play();
+        SoundCloudService.replay();
         SoundCloudService.startVisualizer();
         $scope.focus = "music";
       });

@@ -4,10 +4,9 @@
   function SoundCloudService($http) {
     var service = {};
     var audioCtx = null,
-        _stream = null,
         intv = null,
         streamUrl = "",
-        audio = document.querySelector('audio');
+        audio;
     service.scResponse = null;
 
     service.init = function() {
@@ -26,45 +25,73 @@
       });
     };
 
-    service.startVisualizer = function(){
-
+    service.play = function(){
+      audio = document.querySelector('audio')
       audio.setAttribute('src', streamUrl);
       audio.play();
+    };
 
-      var errorCallback = function(e) {
-        console.log('Reeeejected!', e);
-      };
+    service.pause = function(){
+      audio.pause();
+    };
 
-      audioCtx = new (window.AudioContext || window.webkitAudioContext);
-      var source = audioCtx.createMediaElementSource(audio);
-      // var filter = audioCtx.createBiquadFilter();
+    service.replay = function(){
+      audio.currentTime = 0;
+      audio.pause();
+    };
 
-      var analyser = audioCtx.createAnalyser();
-      analyser.fftSize = 256;
-      audio.crossOrigin = "anonymous";
-      source.connect(analyser);
-      analyser.connect(audioCtx.destination);
+    service.startVisualizer = function(){
 
-      var bufferLength = analyser.frequencyBinCount;
-      console.log(bufferLength);
-
-      var dataArray = new Uint8Array(bufferLength);
-
-      function draw() {
-        analyser.getByteTimeDomainData(dataArray);
-        drawCanvas(dataArray,bufferLength);
-      };
-
-      intv = setInterval(function(){ draw() }, 1000 / 30);
+      // audioCtx = new (window.AudioContext || window.webkitAudioContext);
+      // var source = audioCtx.createMediaElementSource(audio);
+      //
+      // var analyser = audioCtx.createAnalyser();
+      // analyser.fftSize = 256;
+      // audio.crossOrigin = "anonymous";
+      // source.connect(analyser);
+      // analyser.connect(audioCtx.destination);
+      //
+      // var bufferLength = analyser.frequencyBinCount;
+      // console.log(bufferLength);
+      //
+      // var dataArray = new Uint8Array(bufferLength);
+      //
+      // function draw() {
+      //   analyser.getByteTimeDomainData(dataArray);
+      //   drawCanvas(dataArray,bufferLength);
+      // };
+      //
+      // intv = setInterval(function(){ draw() }, 1000 / 30);
     };
 
     service.stopVisualizer = function(){
       clearInterval(intv);
-      audio.pause();
       audioCtx.close();
-      // _stream.getAudioTracks()[0].stop();
     }
     return service;
+  }
+
+  var SoundCloudAudioSource = function(player){
+    var audioCtx = new (window.AudioContext || window.webkitAudioContext);
+    var source = audioCtx.createMediaElementSource(audio);
+
+    var analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 256;
+    audio.crossOrigin = "anonymous";
+    source.connect(analyser);
+    analyser.connect(audioCtx.destination);
+
+    var bufferLength = analyser.frequencyBinCount;
+    console.log(bufferLength);
+
+    var dataArray = new Uint8Array(bufferLength);
+
+    function draw() {
+      analyser.getByteTimeDomainData(dataArray);
+      drawCanvas(dataArray,bufferLength);
+    };
+
+    intv = setInterval(function(){ draw() }, 1000 / 30);
   }
 
   function drawCanvas(dataArray,bufferLength){
