@@ -3,10 +3,9 @@
 
   function SoundCloudService($http) {
     var service = {};
-    var audioCtx = null,
-        intv = null,
-        streamUrl = "",
-        audio;
+    var intv = null,
+        audio = document.querySelector('audio'),
+        audiosource = new SoundCloudAudioSource(audio);
     service.scResponse = null;
 
     service.init = function() {
@@ -20,78 +19,58 @@
       then(function(response) {
         service.scResponse = response.data;
         console.debug("SoundCloud link: ", service.scResponse[0].permalink_url);
-        streamUrl = service.scResponse[0].stream_url + '?client_id=' + SOUNDCLOUD_APT_KEY;
+        var streamUrl = service.scResponse[0].stream_url + '?client_id=' + SOUNDCLOUD_APT_KEY;
+        audio.setAttribute('src', streamUrl);
+
         return service.scResponse;
       });
     };
 
     service.play = function(){
-      audio = document.querySelector('audio')
-      audio.setAttribute('src', streamUrl);
       audio.play();
+      intv = setInterval(function(){ audiosource.draw() }, 1000 / 30);
     };
 
     service.pause = function(){
       audio.pause();
+      clearInterval(intv);
+      audiosource.audioCtx.close();
     };
 
     service.replay = function(){
       audio.currentTime = 0;
       audio.pause();
+      intv = setInterval(function(){ audiosource.draw() }, 1000 / 30);
     };
 
-    service.startVisualizer = function(){
-
-      // audioCtx = new (window.AudioContext || window.webkitAudioContext);
-      // var source = audioCtx.createMediaElementSource(audio);
-      //
-      // var analyser = audioCtx.createAnalyser();
-      // analyser.fftSize = 256;
-      // audio.crossOrigin = "anonymous";
-      // source.connect(analyser);
-      // analyser.connect(audioCtx.destination);
-      //
-      // var bufferLength = analyser.frequencyBinCount;
-      // console.log(bufferLength);
-      //
-      // var dataArray = new Uint8Array(bufferLength);
-      //
-      // function draw() {
-      //   analyser.getByteTimeDomainData(dataArray);
-      //   drawCanvas(dataArray,bufferLength);
-      // };
-      //
-      // intv = setInterval(function(){ draw() }, 1000 / 30);
-    };
-
-    service.stopVisualizer = function(){
-      clearInterval(intv);
-      audioCtx.close();
-    }
+    // service.stopVisualizer = function(){
+    //   clearInterval(intv);
+    //   audiosource.audioCtx.close();
+    // }
     return service;
   }
 
-  var SoundCloudAudioSource = function(player){
-    var audioCtx = new (window.AudioContext || window.webkitAudioContext);
-    var source = audioCtx.createMediaElementSource(audio);
+  var SoundCloudAudioSource = function(audio){
+    var self = this;
+    this.audioCtx = new (window.AudioContext || window.webkitAudioContext);
+    var source = this.audioCtx.createMediaElementSource(audio);
 
-    var analyser = audioCtx.createAnalyser();
+    var analyser = this.audioCtx.createAnalyser();
     analyser.fftSize = 256;
     audio.crossOrigin = "anonymous";
     source.connect(analyser);
-    analyser.connect(audioCtx.destination);
+    analyser.connect(this.audioCtx.destination);
 
-    var bufferLength = analyser.frequencyBinCount;
-    console.log(bufferLength);
+    this.bufferLength = analyser.frequencyBinCount;
 
-    var dataArray = new Uint8Array(bufferLength);
+    this.dataArray = new Uint8Array(this.bufferLength);
 
-    function draw() {
-      analyser.getByteTimeDomainData(dataArray);
-      drawCanvas(dataArray,bufferLength);
+    this.draw = function() {
+      analyser.getByteTimeDomainData(this.dataArray);
+      drawCanvas(this.dataArray,this.bufferLength);
     };
+    // intv = setInterval(function(){ draw() }, 1000 / 30);
 
-    intv = setInterval(function(){ draw() }, 1000 / 30);
   }
 
   function drawCanvas(dataArray,bufferLength){

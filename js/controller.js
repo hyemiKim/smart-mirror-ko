@@ -153,28 +153,20 @@
           $scope.scTrack = response[0].title;
           $scope.focus = "music";
           SoundCloudService.play();
-          SoundCloudService.startVisualizer();
         });
       });
 
       AnnyangService.addCommand(command.musicstop, function() {
-        // sound.pause();
         SoundCloudService.pause();
-        SoundCloudService.stopVisualizer();
         $scope.focus = "default";
       });
 
       AnnyangService.addCommand(command.musicresume, function() {
-        // sound.play();
         SoundCloudService.play();
-        SoundCloudService.startVisualizer();
         $scope.focus = "music";
       });
       AnnyangService.addCommand(command.musicreplay, function() {
-        // sound.seek(0);
-        // sound.play();
         SoundCloudService.replay();
-        SoundCloudService.startVisualizer();
         $scope.focus = "music";
       });
 
