@@ -34,7 +34,6 @@
     service.pause = function(){
       audio.pause();
       clearInterval(intv);
-      // audiosource.audioCtx.close();
     };
 
     service.replay = function(){
@@ -49,14 +48,14 @@
 
   var SoundCloudAudioSource = function(audio){
     var self = this;
-    this.audioCtx = new (window.AudioContext || window.webkitAudioContext);
-    var source = this.audioCtx.createMediaElementSource(audio);
+    var audioCtx = new (window.AudioContext || window.webkitAudioContext);
+    var source = audioCtx.createMediaElementSource(audio);
 
-    var analyser = this.audioCtx.createAnalyser();
+    var analyser = audioCtx.createAnalyser();
     analyser.fftSize = 256;
     audio.crossOrigin = "anonymous";
     source.connect(analyser);
-    analyser.connect(this.audioCtx.destination);
+    analyser.connect(audioCtx.destination);
 
     this.bufferLength = analyser.frequencyBinCount;
 
@@ -66,7 +65,6 @@
       analyser.getByteTimeDomainData(this.dataArray);
       drawCanvas(this.dataArray,this.bufferLength);
     };
-    // intv = setInterval(function(){ draw() }, 1000 / 30);
 
   }
 
