@@ -5,7 +5,9 @@
     var service = {};
     var intv = null,
         audio = document.querySelector('audio'),
-        audiosource = new SoundCloudAudioSource(audio);
+        audiosource = new SoundCloudAudioSource(audio),
+        canvas = document.getElementById('visualizer'),
+        two = new Two().appendTo(canvas);
     service.scResponse = null;
 
     service.init = function() {
@@ -69,37 +71,62 @@
   }
 
   function drawCanvas(dataArray,bufferLength){
-    var canvas = document.getElementById('visualizer');
-    var canvasCtx = canvas.getContext("2d");
+    // var canvas = document.getElementById('visualizer');
+    // var canvasCtx = canvas.getContext("2d");
+    //
+    // var WIDTH = 150;
+    // var HEIGHT = 150;
+    //
+    // canvasCtx.fillStyle = 'rgb(0, 0, 0)';
+    // canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
+    // canvasCtx.strokeStyle = 'rgb(255,255,255)';
+    //
+    // canvasCtx.lineWidth = 2;
+    // canvasCtx.beginPath();
+    //
+    // var sliceWidth = WIDTH * 1.0 / bufferLength;
+    // var x = 0;
+    //
+    // for(var i = 0; i < bufferLength; i++) {
+    //   var data = dataArray[i];
+    //   var v = data / 128.0;
+    //   var y = v * HEIGHT/2;
+    //
+    //   if(i === 0) {
+    //     canvasCtx.moveTo(x, y);
+    //   } else {
+    //     canvasCtx.lineTo(x, y);
+    //   }
+    //
+    //   x += sliceWidth;
+    // }
+    // canvasCtx.lineTo(canvas.width, canvas.height/2);
+    // canvasCtx.stroke();
 
-    var WIDTH = 150;
-    var HEIGHT = 150;
+    console.log("@@@@2", two);
 
-    canvasCtx.fillStyle = 'rgb(0, 0, 0)';
-    canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
-    canvasCtx.strokeStyle = 'rgb(255,255,255)';
-
-    canvasCtx.lineWidth = 2;
-    canvasCtx.beginPath();
-
-    var sliceWidth = WIDTH * 1.0 / bufferLength;
-    var x = 0;
-
-    for(var i = 0; i < bufferLength; i++) {
-      var data = dataArray[i];
-      var v = data / 128.0;
-      var y = v * HEIGHT/2;
-
-      if(i === 0) {
-        canvasCtx.moveTo(x, y);
-      } else {
-        canvasCtx.lineTo(x, y);
-      }
-
-      x += sliceWidth;
-    }
-    canvasCtx.lineTo(canvas.width, canvas.height/2);
-    canvasCtx.stroke();
+    // var circle = two.makeCircle(-70, 0, 50);
+    // var rect = two.makeRectangle(70, 0, 100, 100);
+    // circle.fill = '#FF8000';
+    // rect.fill = 'rgba(0, 200, 255, 0.75)';
+    //
+    // var group = two.makeGroup(circle, rect);
+    // group.translation.set(two.width / 2, two.height / 2);
+    // group.scale = 0;
+    // group.noStroke();
+    //
+    // // Bind a function to scale and rotate the group
+    // // to the animation loop.
+    // two.bind('update', function(frameCount) {
+    //   // This code is called everytime two.update() is called.
+    //   // Effectively 60 times per second.
+    //   if (group.scale > 0.9999) {
+    //     group.scale = group.rotation = 0;
+    //   }
+    //   var t = (1 - group.scale) * 0.125;
+    //   group.scale += t;
+    //   group.rotation += t * 4 * Math.PI;
+    // }).play();
   }
 
   angular.module('SmartMirror')

@@ -3,7 +3,7 @@
 
   function MirrorCtrl(AnnyangService, GeolocationService, WeatherService, MapService, SubwayService, YoutubeService, HueService, SoundCloudService,$scope, $timeout, $sce) {
     var _this = this;
-    var command = COMMANDS.ko;
+    var command = COMMANDS.en;
     var DEFAULT_COMMAND_TEXT = command.default;
     $scope.listening = false;
     $scope.debug = false;
@@ -145,38 +145,29 @@
 
       AnnyangService.addCommand(command.musicplay, function(track) {
         SoundCloudService.searchSoundCloud(track).then(function(response){
-          SC.stream('/tracks/' + response[0].id).then(function(player){
-            player.play();
-            sound = player;
-            playing = true;
-          });
-
           if (response[0].artwork_url){
-            $scope.scThumb = response[0].artwork_url.replace("-large.", "-t500x500.");
+              $scope.scThumb = response[0].artwork_url.replace("-large.", "-t500x500.");
           } else {
-            $scope.scThumb = 'http://i.imgur.com/8Jqd33w.jpg?1';
+              $scope.scThumb = 'http://i.imgur.com/8Jqd33w.jpg?1';
           }
+          $scope.scWaveform = response[0].waveform_url;
           $scope.scTrack = response[0].title;
           $scope.focus = "music";
-          SoundCloudService.startVisualizer();
+          SoundCloudService.play();
         });
       });
 
       AnnyangService.addCommand(command.musicstop, function() {
-        sound.pause();
-        SoundCloudService.stopVisualizer();
+        SoundCloudService.pause();
         $scope.focus = "default";
       });
 
       AnnyangService.addCommand(command.musicresume, function() {
-        sound.play();
-        SoundCloudService.startVisualizer();
+        SoundCloudService.play();
         $scope.focus = "music";
       });
       AnnyangService.addCommand(command.musicreplay, function() {
-        sound.seek(0);
-        sound.play();
-        SoundCloudService.startVisualizer();
+        SoundCloudService.replay();
         $scope.focus = "music";
       });
 
