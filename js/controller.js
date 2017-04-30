@@ -1,7 +1,7 @@
 (function(angular) {
   'use strict';
 
-  function MirrorCtrl(AnnyangService, GeolocationService, WeatherService, MapService, SubwayService, YoutubeService, HueService, SoundCloudService,$scope, $timeout, $sce) {
+  function MirrorCtrl(AnnyangService, GeolocationService, WeatherService, MapService, SubwayService, SoundCloudService,$scope, $timeout, $sce) {
     var _this = this;
     var command = COMMANDS.en;
     var DEFAULT_COMMAND_TEXT = command.default;
@@ -45,9 +45,6 @@
           //$timeout(WeatherService.refreshWeather, 3600000);
         });
       })
-
-      // Hue communication
-      HueService.init();
 
       var defaultView = function() {
         console.debug("Ok, going to default view...");
@@ -137,12 +134,6 @@
         _this.clearResults();
       });
 
-      // Turn lights off
-      AnnyangService.addCommand(command.light, function(state, action) {
-        HueService.performUpdate(state + " " + action);
-      });
-
-
       AnnyangService.addCommand(command.musicplay, function(track) {
         SoundCloudService.searchSoundCloud(track).then(function(response){
           if (response[0].artwork_url){
@@ -169,36 +160,6 @@
       AnnyangService.addCommand(command.musicreplay, function() {
         SoundCloudService.replay();
         $scope.focus = "music";
-      });
-
-      AnnyangService.addCommand(command.playyoutube, function(term) {
-
-        YoutubeService.getYoutube(term,'video').then(function(){
-          if(term){
-            var videoId = YoutubeService.getVideoId()
-            $scope.focus = "youtube";
-            $scope.youtubeurl = "http://www.youtube.com/embed/" + videoId + "?autoplay=1&enablejsapi=1&version=3&playerapiid=ytplayer"
-            $scope.currentYoutubeUrl = $sce.trustAsResourceUrl($scope.youtubeurl);
-          }
-        });
-      });
-
-      AnnyangService.addCommand(command.ytbplaylist, function(term) {
-
-        YoutubeService.getYoutube(term,'playlist').then(function(){
-          if(term){
-            var playlistId = YoutubeService.getPlaylistId()
-            $scope.focus = "youtube";
-            $scope.youtubeurl = "http://www.youtube.com/embed?autoplay=1&listType=playlist&enablejsapi=1&version=3&list="+playlistId
-            $scope.currentYoutubeUrl = $sce.trustAsResourceUrl($scope.youtubeurl);
-          }
-        });
-      });
-
-      AnnyangService.addCommand(command.stopyoutube, function() {
-        var iframe = document.getElementsByTagName("iframe")[0].contentWindow;
-        iframe.postMessage('{"event":"command","func":"' + 'stopVideo' +   '","args":""}', '*');
-        $scope.focus = "default";
       });
 
       AnnyangService.addCommand(command.subway, function(station,linenumber,updown) {
